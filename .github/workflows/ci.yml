@@ -27,6 +27,11 @@ jobs:
           . .venv/bin/activate
           uv pip install -e ".[dev]" --extra-index-url https://download.pytorch.org/whl/cpu
 
+      - name: Seed demo data
+        run: |
+          . .venv/bin/activate
+          python scripts/generate_demo_data.py
+
       - name: Run test suite
         run: |
           . .venv/bin/activate
