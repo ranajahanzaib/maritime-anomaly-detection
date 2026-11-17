@@ -74,6 +74,50 @@ def test_map_endpoints():
 
 
 def test_models_and_evaluation():
+    from backend.app.db.session import SessionLocal
+    from backend.app.models.entities import ModelRecord, EvaluationRun
+    import datetime
+
+    db = SessionLocal()
+    try:
+        if db.query(ModelRecord).count() == 0:
+            m = ModelRecord(
+                id="test_model_tcn_v1",
+                name="TCN Autoencoder Test",
+                model_type="TCN_AUTOENCODER",
+                version="v1.0.0",
+                status="TRAINED",
+                validation_metrics={"final_val_loss": 0.042, "anomaly_threshold": 0.12},
+                hyperparameters={"epochs": 5, "lr": 0.001},
+                created_at=datetime.datetime.now(datetime.timezone.utc),
+            )
+            db.add(m)
+            db.commit()
+
+        if db.query(EvaluationRun).count() == 0:
+            ev = EvaluationRun(
+                id="test_eval_v1",
+                name="Synthetic Benchmark Evaluation",
+                model_id="test_model_tcn_v1",
+                dataset_name="SYNTHETIC_BENCHMARK",
+                split_strategy="VESSEL_GROUPED_TEMPORAL",
+                metrics={
+                    "precision": 0.89,
+                    "recall": 0.87,
+                    "f1_score": 0.88,
+                    "pr_auc": 0.91,
+                    "roc_auc": 0.94,
+                    "precision_at_5": 1.0,
+                    "precision_at_10": 0.90,
+                    "false_alerts_per_vessel_day": 0.12,
+                },
+                created_at=datetime.datetime.now(datetime.timezone.utc),
+            )
+            db.add(ev)
+            db.commit()
+    finally:
+        db.close()
+
     res_models = client.get("/api/v1/models")
     assert res_models.status_code == 200
     assert len(res_models.json()) > 0
