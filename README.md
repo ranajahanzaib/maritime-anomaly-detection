@@ -1,56 +1,229 @@
-# Project Title
+# Vessel Behavior Analysis Platform
 
-[![GitHub license](https://img.shields.io/badge/License-MIT-blue.svg)](./LICENSE) [![PRs Welcome](https://img.shields.io/badge/PRs-Welcome-brightgreen.svg)](./CONTRIBUTING.md)
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](./LICENSE)
+[![Python: 3.12+](https://img.shields.io/badge/Python-3.12%2B-blue.svg)](https://www.python.org/)
+[![FastAPI](https://img.shields.io/badge/FastAPI-0.115%2B-009688.svg)](https://fastapi.tiangolo.com/)
+[![PyTorch](https://img.shields.io/badge/PyTorch-2.3%2B-EE4C2C.svg)](https://pytorch.org/)
+[![Next.js](https://img.shields.io/badge/Next.js-15-black.svg)](https://nextjs.org/)
+[![DuckDB](https://img.shields.io/badge/DuckDB-1.0%2B-FFF000.svg)](https://duckdb.org/)
+[![Tests](https://img.shields.io/badge/Tests-Passing-brightgreen.svg)](./tests)
 
-One-line description of what this project does and who it's for.
+A complete, production-quality open-source maritime vessel behaviour analysis platform.
 
-## Features
+The system learns what normal maritime movement looks like, identifies unusual vessel behaviour, and gives human analysts explainable evidence to investigate why a particular trajectory or vessel interaction is unusual.
 
-- Feature one
-- Feature two
-- Feature three
+This is **not** a generic GPS tracking application or simple AIS map viewer. Its central focus is **behavioural intelligence**: understanding movement over time, learning normal patterns, identifying deviations, analysing relationships between vessels, and distinguishing meaningful behaviour from data-quality problems or normal maritime operations.
+
+---
+
+## Key Capabilities
+
+- **Unusual Route Deviation Analysis:** Detects vessels deviating from established Traffic Separation Schemes (TSS) or historical corridors.
+- **Rendezvous & Proximity Detection:** Identifies close encounters, computes inter-vessel distance timelines, and distinguishes open-water rendezvous from routine tug escorts.
+- **Loitering & Dwell Intelligence:** Contextualizes low-speed dwell behavior, recognizing designated anchorages and port congestion to prevent false alarms.
+- **Peer-Group Kinematic Deviation:** Benchmarks vessel speed and turn rates against class distributions (Cargo, Tanker, Fishing, Passenger, Tug).
+- **Historical Profile Inconsistency:** Learns vessel-specific operating areas and speeds when historical data is sufficient.
+- **AIS Observability Gap Tracking:** Identifies transmission loss as telemetry data quality signals rather than fabricating unobserved paths.
+- **Explainable Anomaly Scoring:** Breaks down every detection into quantitative feature attributions and contextual explanations.
+- **Deep Sequence Modeling:** Features a 1D Causal Dilated Temporal Convolutional Autoencoder (TCN Autoencoder) and comparative Trajectory Transformer in PyTorch.
+- **Columnar Analytical Storage:** Employs partitioned Parquet and DuckDB for sub-millisecond trajectory lookups and spatial density heatmaps.
+- **Interactive Dark Maritime Interface:** Modern Next.js and MapLibre GL JS dark analytical interface with responsive inspection drawers.
+
+---
+
+## Supported Behavioural Scenarios
+
+| Scenario | Detection Strategy | Contextual Interpretation |
+| :--- | :--- | :--- |
+| **A. Unusual Route Deviation** | Lateral deviation from shipping corridor centerline $>3.5\text{ NM}$ | Checks alignment with recognized separation schemes and coastal fairways |
+| **B. Unusual Rendezvous** | Inter-vessel distance $\le 600\text{m}$, duration $\ge 15\text{m}$, low relative speed | Distinguishes open sea rendezvous from port tug assists & pilot transfers |
+| **C. Loitering / Unusual Dwell** | SOG $\le 1.5\text{ kts}$, radius $\le 1.2\text{ NM}$, duration $\ge 2.0\text{ hours}$ | Normalizes anchorages (Maasvlakte, Dover, Singapore) & active fishing grounds |
+| **D. Peer-Group Deviation** | Statistical $z$-score on speed distribution $>2.5\sigma$ | Benchmarks against vessel class operating baselines |
+| **E. Historical Inconsistency** | Deviation from vessel's established baseline ($\ge 30$ observations) | Distinguishes fleet anomalies from established vessel-specific profiles |
+| **F. AIS Transmission Gaps** | Transmission silence $\ge 2.0\text{ hours}$ | Exposes RF coverage and receiver pass limits; never silently interpolates |
+
+---
+
+## Architecture Overview
+
+```mermaid
+flowchart TD
+    RawAIS["Raw AIS (CSV / Parquet / ZIP)"] --> Adapters["Source Adapters (NOAA / DMA / HawaiiCoast / Generic)"]
+    Adapters --> Validator["Data Quality & Plausibility Validator"]
+    Validator --> ParquetStore["Partitioned Parquet Store (data/storage)"]
+    Validator --> DuckDBLayer["DuckDB Analytical Layer"]
+
+    ParquetStore --> Segmenter["Trajectory Segmenter (Max Gap Threshold)"]
+    Segmenter --> Kinematics["Kinematic Derivations (Speed, Accel, Turn Rate)"]
+    Kinematics --> Features["Spatial-Temporal Feature Extractor"]
+
+    Features --> Detectors["Multi-Detector Engine (Rule-based, Statistical, Deep TCN)"]
+    Detectors --> Context["Maritime Context Engine (Ports, Anchorages, TSS)"]
+    Context --> DB[("PostgreSQL / PostGIS / SQLite")]
+
+    DB --> API["FastAPI REST Backend (/api/v1)"]
+    DuckDBLayer --> API
+    API --> UI["Next.js Dark Analytical Frontend (MapLibre GL)"]
+    Worker["Background Job Worker"] --> DB
+```
+
+---
+
+## Technology Stack
+
+- **Backend & Processing:** Python 3.12+, FastAPI, Pydantic, SQLAlchemy, Alembic, Polars, DuckDB, PyArrow / Parquet, Shapely, PyProj, Scikit-learn, PyTorch, NumPy, SciPy.
+- **Frontend:** Next.js 15, React 19, TypeScript, Tailwind CSS, MapLibre GL JS, TanStack Query, Zustand, Recharts, Lucide Icons.
+- **Storage & Infrastructure:** Dual-mode database (zero-config SQLite for standalone local run; PostgreSQL + PostGIS via Docker Compose), local filesystem Parquet partitioning, in-process background worker queue.
+
+---
 
 ## Getting Started
 
-### Prerequisites
+### 1. Prerequisites
 
-List anything the user needs to have installed before they can use this project.
+- Python 3.12+ (Python 3.12 or 3.13)
+- Node.js v20+ or v22+
+- `pnpm` v9+ or v10+
+- `uv` (recommended)
 
-### Installation
+### 2. Local Installation
 
 ```bash
 # Clone the repository
-git clone https://github.com/username/repo-name.git
-cd repo-name
+git clone https://github.com/ranajahanzaib/maritime-anomaly-detection.git
+cd maritime-anomaly-detection
 
-# Install dependencies
-# add your install command here
+# Create virtual environment and install backend dependencies
+uv venv
+source .venv/bin/activate
+uv pip install -e ".[dev]"
+
+# Install frontend dependencies
+cd frontend
+pnpm install
+cd ..
 ```
 
-### Usage
+### 3. Generate Demonstration Dataset
+
+The repository includes a deterministic synthetic AIS data generator that builds realistic trajectories and all 10 demonstration scenarios in the English Channel and North Sea:
 
 ```bash
-# Add your run command here
+PYTHONPATH=. .venv/bin/python scripts/generate_demo_data.py
 ```
 
-## Contributing
+### 4. Train the Temporal Deep Learning Model
 
-We'd love to accept your patches and contributions to this project. There are just a few guidelines you need to follow.
+Train the PyTorch Temporal Convolutional Autoencoder on the extracted trajectory windows:
 
-### [Code of Conduct](./CODE_OF_CONDUCT.md)
+```bash
+PYTHONPATH=. .venv/bin/python scripts/train_model.py TCN_AUTOENCODER
+```
 
-This project follows the [Contributor Covenant](https://www.contributor-covenant.org/) as its Code of Conduct, and we expect all project participants to adhere to it. Kindly read the [full guide](./CODE_OF_CONDUCT.md) to understand what actions will not be tolerated.
+### 5. Run the Automated Test Suite
 
-### [Contributing Guide](./CONTRIBUTING.md)
+```bash
+PYTHONPATH=. .venv/bin/pytest tests/ -v
+```
 
-Read our [contributing guide](./CONTRIBUTING.md) to learn about our development process, how to propose bug fixes and improvements, and how to build and test your changes to the project.
+### 6. Start the Application
 
-### Issues
+In **Terminal 1** (Backend API on `http://localhost:8000`):
+```bash
+PYTHONPATH=. .venv/bin/uvicorn backend.app.main:app --host 0.0.0.0 --port 8000 --reload
+```
 
-Feel free to submit issues and enhancement requests. Use the template provided when creating an issue to ensure your request is clear and actionable.
+In **Terminal 2** (Frontend on `http://localhost:3000`):
+```bash
+cd frontend
+pnpm run dev
+```
 
-See the open issues for a complete list of proposed features (and known issues).
+Open [http://localhost:3000](http://localhost:3000) in your browser.
 
-## [License](./LICENSE)
+---
 
-This project is licensed under the [MIT License](./LICENSE), meaning that you're free to modify, distribute, and/or use it for any commercial or private project.
+## Running with Docker Compose
+
+To run the complete platform with PostgreSQL and PostGIS in Docker:
+
+```bash
+docker compose up --build
+```
+
+- Web Interface: [http://localhost:3000](http://localhost:3000)
+- Interactive API Documentation: [http://localhost:8000/api/v1/docs](http://localhost:8000/api/v1/docs)
+
+---
+
+## External Dataset Ingestion
+
+To ingest external AIS datasets:
+
+```bash
+# Import NOAA MarineCadastre AIS CSV or Parquet
+python scripts/import_dataset.py /path/to/noaa_ais.parquet --source NOAA
+
+# Import HawaiiCoast_GT Benchmark
+python scripts/import_dataset.py /path/to/hawaiicoast.csv --source HAWAII_COAST
+
+# Import Danish Maritime Authority AIS Trajectories
+python scripts/import_dataset.py /path/to/danish_trajectories.csv --source DANISH_AIS
+```
+
+---
+
+## Benchmark Evaluation
+
+Evaluate detector performance against ground-truth annotations:
+
+```bash
+python scripts/run_evaluation.py
+```
+
+Outputs:
+- **Precision, Recall, F1 Score**
+- **PR-AUC & ROC-AUC**
+- **Precision@5 and Precision@10**
+- **False Alerts per Vessel-Day**
+
+---
+
+## REST API Reference Summary
+
+- `GET /api/v1/overview/stats` — High-level platform metrics and category distribution.
+- `GET /api/v1/vessels` — Searchable vessel directory with filters and kinematic statistics.
+- `GET /api/v1/vessels/{mmsi}/trajectories` — Simplified GeoJSON trajectory segments.
+- `GET /api/v1/map/density` — Aggregated spatial density grid cells for traffic heatmap.
+- `GET /api/v1/map/vessels` — Latest vessel positions and headings as GeoJSON.
+- `GET /api/v1/map/zones` — Reference ports, anchorages, and shipping corridors.
+- `GET /api/v1/events` — Filterable behavioral events with deviation scores and severities.
+- `GET /api/v1/events/{id}` — Detailed event evidence, pairwise timelines, and attributions.
+- `PATCH /api/v1/events/{id}` — Update investigation review status and analyst notes.
+- `POST /api/v1/models/train` — Launch asynchronous model training run.
+- `POST /api/v1/evaluation/run` — Run benchmark evaluation against annotated ground-truth.
+- `GET /api/v1/export/events` — Export events in JSON, CSV, or GeoJSON formats.
+
+Interactive OpenAPI Swagger docs available at [http://localhost:8000/api/v1/docs](http://localhost:8000/api/v1/docs).
+
+---
+
+## Data Provenance & Citations
+
+1. **NOAA MarineCadastre AIS:** US Bureau of Ocean Energy Management (BOEM) and National Oceanic and Atmospheric Administration (NOAA). Public domain.
+2. **HawaiiCoast_GT Ground Truth Benchmark:** Zenodo Record 8253611. Licensed under CC-BY 4.0.
+3. **Danish AIS Trajectory Datasets:** Danish Maritime Authority (DMA) open data.
+
+---
+
+## Scientific Limitations & Disclaimers
+
+1. **Anomalies are not accusations:** An unusual speed, route deviation, or rendezvous does not imply illegal activity. Normal maritime operations (weather avoidance, port congestion waiting, pilotage, tug operations, fishing) frequently produce statistical outliers.
+2. **Observability vs Intent:** AIS transmission gaps represent radio line-of-sight and satellite reception limits, not proof of intentional transponder manipulation.
+3. **Synthetic Demonstration Data:** Synthetic trajectories are deterministic simulations designed for reproducible local testing. They are explicitly tagged with `is_synthetic=True` and are never conflated with real-world maritime incidents.
+
+---
+
+## License
+
+This project is licensed under the MIT License - see the [LICENSE](./LICENSE) file for details.
