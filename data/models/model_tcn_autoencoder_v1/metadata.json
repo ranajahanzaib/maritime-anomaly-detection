@@ -1,0 +1,80 @@
+{
+  "model_id": "model_tcn_autoencoder_v1",
+  "model_type": "TCN_AUTOENCODER",
+  "dataset_id": "synthetic_demo_v1",
+  "seq_len": 16,
+  "in_features": 7,
+  "validation_metrics": {
+    "final_train_loss": 0.399093,
+    "final_val_loss": 0.15951,
+    "reconstruction_error_mean": 0.15951,
+    "reconstruction_error_p95": 0.355001,
+    "anomaly_threshold": 0.355001,
+    "total_windows": 153,
+    "train_samples": 123,
+    "val_samples": 30
+  },
+  "training_history": [
+    {
+      "epoch": 1,
+      "train_loss": 19.124226,
+      "val_loss": 3.390742
+    },
+    {
+      "epoch": 2,
+      "train_loss": 9.737924,
+      "val_loss": 1.82614
+    },
+    {
+      "epoch": 3,
+      "train_loss": 5.256475,
+      "val_loss": 1.199941
+    },
+    {
+      "epoch": 4,
+      "train_loss": 3.500642,
+      "val_loss": 0.662074
+    },
+    {
+      "epoch": 5,
+      "train_loss": 2.155711,
+      "val_loss": 0.36586
+    },
+    {
+      "epoch": 6,
+      "train_loss": 1.572498,
+      "val_loss": 0.361027
+    },
+    {
+      "epoch": 7,
+      "train_loss": 1.044765,
+      "val_loss": 0.360271
+    },
+    {
+      "epoch": 8,
+      "train_loss": 0.876154,
+      "val_loss": 0.331284
+    },
+    {
+      "epoch": 9,
+      "train_loss": 0.709642,
+      "val_loss": 0.272261
+    },
+    {
+      "epoch": 10,
+      "train_loss": 0.57873,
+      "val_loss": 0.222668
+    },
+    {
+      "epoch": 11,
+      "train_loss": 0.481549,
+      "val_loss": 0.169683
+    },
+    {
+      "epoch": 12,
+      "train_loss": 0.399093,
+      "val_loss": 0.15951
+    }
+  ],
+  "trained_at": "2026-11-17T09:31:13Z"
+}

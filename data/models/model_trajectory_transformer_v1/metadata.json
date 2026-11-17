@@ -1,0 +1,80 @@
+{
+  "model_id": "model_trajectory_transformer_v1",
+  "model_type": "TRAJECTORY_TRANSFORMER",
+  "dataset_id": "synthetic_demo_v1",
+  "seq_len": 16,
+  "in_features": 7,
+  "validation_metrics": {
+    "final_train_loss": 6.253735,
+    "final_val_loss": 16.883424,
+    "reconstruction_error_mean": 16.883424,
+    "reconstruction_error_p95": 128.309552,
+    "anomaly_threshold": 128.309552,
+    "total_windows": 153,
+    "train_samples": 123,
+    "val_samples": 30
+  },
+  "training_history": [
+    {
+      "epoch": 1,
+      "train_loss": 12.788507,
+      "val_loss": 26.446745
+    },
+    {
+      "epoch": 2,
+      "train_loss": 10.510139,
+      "val_loss": 24.705036
+    },
+    {
+      "epoch": 3,
+      "train_loss": 9.798657,
+      "val_loss": 23.815512
+    },
+    {
+      "epoch": 4,
+      "train_loss": 9.330328,
+      "val_loss": 22.90261
+    },
+    {
+      "epoch": 5,
+      "train_loss": 8.834429,
+      "val_loss": 22.005687
+    },
+    {
+      "epoch": 6,
+      "train_loss": 8.338301,
+      "val_loss": 21.174767
+    },
+    {
+      "epoch": 7,
+      "train_loss": 7.94953,
+      "val_loss": 20.346919
+    },
+    {
+      "epoch": 8,
+      "train_loss": 7.510825,
+      "val_loss": 19.612824
+    },
+    {
+      "epoch": 9,
+      "train_loss": 7.173273,
+      "val_loss": 18.85788
+    },
+    {
+      "epoch": 10,
+      "train_loss": 6.866487,
+      "val_loss": 18.124753
+    },
+    {
+      "epoch": 11,
+      "train_loss": 6.550358,
+      "val_loss": 17.486929
+    },
+    {
+      "epoch": 12,
+      "train_loss": 6.253735,
+      "val_loss": 16.883424
+    }
+  ],
+  "trained_at": "2026-11-17T09:31:21Z"
+}
