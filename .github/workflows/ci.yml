@@ -25,7 +25,7 @@ jobs:
         run: |
           uv venv
           . .venv/bin/activate
-          uv pip install -e ".[dev]"
+          uv pip install -e ".[dev]" --extra-index-url https://download.pytorch.org/whl/cpu
 
       - name: Run test suite
         run: |
