@@ -1,28 +1,19 @@
 "use client";
 
-import React, { useEffect, useRef, useState } from "react";
-import * as maplibregl from "maplibre-gl";
-import {
-  Layers,
-  Filter,
-  Eye,
-  EyeOff,
-  Navigation,
-  Compass,
-  AlertTriangle,
-  Anchor,
-  Clock,
-  Ship,
-  Search,
-} from "lucide-react";
 import { api } from "@/lib/api";
+import { Anchor, Filter, Search, Ship } from "lucide-react";
+import * as maplibregl from "maplibre-gl";
+import { useEffect, useRef, useState } from "react";
 
 interface MaritimeMapViewProps {
   onSelectVessel?: (mmsi: number) => void;
   onSelectEvent?: (eventId: string) => void;
 }
 
-export function MaritimeMapView({ onSelectVessel, onSelectEvent }: MaritimeMapViewProps) {
+export function MaritimeMapView({
+  onSelectVessel,
+  onSelectEvent,
+}: MaritimeMapViewProps) {
   const mapContainer = useRef<HTMLDivElement>(null);
   const map = useRef<maplibregl.Map | null>(null);
 
@@ -43,13 +34,20 @@ export function MaritimeMapView({ onSelectVessel, onSelectEvent }: MaritimeMapVi
   const [selectedEntity, setSelectedEntity] = useState<any>(null);
 
   // Load zones & data
-  const [zones, setZones] = useState<{ ports: any[]; anchorages: any[]; corridors: any[] } | null>(null);
+  const [zones, setZones] = useState<{
+    ports: any[];
+    anchorages: any[];
+    corridors: any[];
+  } | null>(null);
   const [mapVessels, setMapVessels] = useState<any[]>([]);
   const [eventsList, setEventsList] = useState<any[]>([]);
 
   useEffect(() => {
     api.getMapZones().then(setZones).catch(console.error);
-    api.getMapVessels().then((data) => setMapVessels(data.features || [])).catch(console.error);
+    api
+      .getMapVessels()
+      .then((data) => setMapVessels(data.features || []))
+      .catch(console.error);
     api.getEvents({ limit: 100 }).then(setEventsList).catch(console.error);
   }, []);
 
@@ -57,24 +55,26 @@ export function MaritimeMapView({ onSelectVessel, onSelectEvent }: MaritimeMapVi
   useEffect(() => {
     if (!mapContainer.current || map.current) return;
 
+    maplibregl.setWorkerUrl("/maplibre-gl-worker.mjs");
+
     // Standard dark tile style
     const darkStyle: maplibregl.StyleSpecification = {
       version: 8,
       sources: {
-        carto_dark: {
+        dark_tiles: {
           type: "raster",
           tiles: [
-            "https://basemaps.cartocdn.com/dark_all/{z}/{x}/{y}@2x.png",
+            "https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Dark_Gray_Base/MapServer/tile/{z}/{y}/{x}",
           ],
           tileSize: 256,
-          attribution: "© OpenStreetMap, © CARTO",
+          attribution: "© Esri, HERE, Garmin, © OpenStreetMap contributors",
         },
       },
       layers: [
         {
-          id: "carto_dark_layer",
+          id: "dark_tiles_layer",
           type: "raster",
-          source: "carto_dark",
+          source: "dark_tiles",
           minzoom: 0,
           maxzoom: 19,
         },
@@ -85,13 +85,16 @@ export function MaritimeMapView({ onSelectVessel, onSelectEvent }: MaritimeMapVi
       const m = new maplibregl.Map({
         container: mapContainer.current,
         style: darkStyle,
-        center: [1.45, 51.10], // Dover Strait / English Channel default
+        center: [1.45, 51.1], // Dover Strait / English Channel default
         zoom: 7.8,
         pitch: 15,
         attributionControl: false,
       });
 
-      m.addControl(new maplibregl.NavigationControl({ showCompass: true }), "top-right");
+      m.addControl(
+        new maplibregl.NavigationControl({ showCompass: true }),
+        "bottom-right",
+      );
 
       m.on("load", async () => {
         // Load trajectories GeoJSON source
@@ -145,15 +148,27 @@ export function MaritimeMapView({ onSelectVessel, onSelectEvent }: MaritimeMapVi
             type: "circle",
             source: "density_src",
             paint: {
-              "circle-radius": ["interpolate", ["linear"], ["get", "count"], 1, 6, 50, 18],
+              "circle-radius": [
+                "interpolate",
+                ["linear"],
+                ["get", "count"],
+                1,
+                6,
+                50,
+                18,
+              ],
               "circle-color": [
                 "interpolate",
                 ["linear"],
                 ["get", "count"],
-                1, "rgba(14, 165, 233, 0.25)",
-                10, "rgba(16, 185, 129, 0.45)",
-                30, "rgba(245, 158, 11, 0.6)",
-                60, "rgba(244, 63, 94, 0.75)",
+                1,
+                "rgba(14, 165, 233, 0.25)",
+                10,
+                "rgba(16, 185, 129, 0.45)",
+                30,
+                "rgba(245, 158, 11, 0.6)",
+                60,
+                "rgba(244, 63, 94, 0.75)",
               ],
               "circle-blur": 0.4,
             },
@@ -181,10 +196,18 @@ export function MaritimeMapView({ onSelectVessel, onSelectEvent }: MaritimeMapVi
     if (!map.current || !map.current.isStyleLoaded()) return;
     try {
       if (map.current.getLayer("density_heat")) {
-        map.current.setLayoutProperty("density_heat", "visibility", showDensity ? "visible" : "none");
+        map.current.setLayoutProperty(
+          "density_heat",
+          "visibility",
+          showDensity ? "visible" : "none",
+        );
       }
       if (map.current.getLayer("trajectories_line")) {
-        map.current.setLayoutProperty("trajectories_line", "visibility", showTrajectories ? "visible" : "none");
+        map.current.setLayoutProperty(
+          "trajectories_line",
+          "visibility",
+          showTrajectories ? "visible" : "none",
+        );
       }
     } catch (_) {}
   }, [showDensity, showTrajectories]);
@@ -194,7 +217,11 @@ export function MaritimeMapView({ onSelectVessel, onSelectEvent }: MaritimeMapVi
     const p = f.properties;
     if (filterType !== "All" && p.vessel_type !== filterType) return false;
     if (filterBehavior === "Deviations" && p.event_count === 0) return false;
-    if (searchMmsi && !p.mmsi.toString().includes(searchMmsi) && !p.name.toLowerCase().includes(searchMmsi.toLowerCase())) {
+    if (
+      searchMmsi &&
+      !p.mmsi.toString().includes(searchMmsi) &&
+      !p.name.toLowerCase().includes(searchMmsi.toLowerCase())
+    ) {
       return false;
     }
     return true;
@@ -214,7 +241,9 @@ export function MaritimeMapView({ onSelectVessel, onSelectEvent }: MaritimeMapVi
             <div className="flex items-center justify-between border-b border-slate-800 pb-2">
               <div className="flex items-center space-x-2 text-slate-200">
                 <Filter className="w-4 h-4 text-sky-400" />
-                <span className="text-xs font-semibold uppercase tracking-wider">Map Controls</span>
+                <span className="text-xs font-semibold uppercase tracking-wider">
+                  Map Controls
+                </span>
               </div>
               <button
                 onClick={() => setFilterPanelOpen(false)}
@@ -226,7 +255,9 @@ export function MaritimeMapView({ onSelectVessel, onSelectEvent }: MaritimeMapVi
 
             {/* MMSI / Vessel Name Search */}
             <div className="space-y-1">
-              <label className="text-[11px] font-mono text-slate-400">Search Vessel / MMSI</label>
+              <label className="text-[11px] font-mono text-slate-400">
+                Search Vessel / MMSI
+              </label>
               <div className="relative">
                 <Search className="w-3.5 h-3.5 text-slate-500 absolute left-2.5 top-2.5" />
                 <input
@@ -241,7 +272,9 @@ export function MaritimeMapView({ onSelectVessel, onSelectEvent }: MaritimeMapVi
 
             {/* Vessel Type Filter */}
             <div className="space-y-1">
-              <label className="text-[11px] font-mono text-slate-400">Vessel Category</label>
+              <label className="text-[11px] font-mono text-slate-400">
+                Vessel Category
+              </label>
               <select
                 value={filterType}
                 onChange={(e) => setFilterType(e.target.value)}
@@ -259,7 +292,9 @@ export function MaritimeMapView({ onSelectVessel, onSelectEvent }: MaritimeMapVi
 
             {/* Behaviour Filter */}
             <div className="space-y-1">
-              <label className="text-[11px] font-mono text-slate-400">Behavioural Filter</label>
+              <label className="text-[11px] font-mono text-slate-400">
+                Behavioural Filter
+              </label>
               <select
                 value={filterBehavior}
                 onChange={(e) => setFilterBehavior(e.target.value)}
@@ -432,26 +467,37 @@ export function MaritimeMapView({ onSelectVessel, onSelectEvent }: MaritimeMapVi
 
             <div className="grid grid-cols-2 md:grid-cols-4 gap-3 py-3 text-xs font-mono">
               <div>
-                <span className="text-[10px] text-slate-500 block">SOG / COG</span>
+                <span className="text-[10px] text-slate-500 block">
+                  SOG / COG
+                </span>
                 <span className="text-slate-200">
-                  {selectedEntity.sog?.toFixed(1) || "0.0"} kts / {selectedEntity.cog?.toFixed(0) || "0"}°
+                  {selectedEntity.sog?.toFixed(1) || "0.0"} kts /{" "}
+                  {selectedEntity.cog?.toFixed(0) || "0"}°
                 </span>
               </div>
               <div>
                 <span className="text-[10px] text-slate-500 block">Flag</span>
-                <span className="text-slate-200">{selectedEntity.flag || "Unknown"}</span>
+                <span className="text-slate-200">
+                  {selectedEntity.flag || "Unknown"}
+                </span>
               </div>
               <div>
-                <span className="text-[10px] text-slate-500 block">Quality Score</span>
+                <span className="text-[10px] text-slate-500 block">
+                  Quality Score
+                </span>
                 <span className="text-emerald-400">
                   {(selectedEntity.quality_score * 100).toFixed(0)}%
                 </span>
               </div>
               <div>
-                <span className="text-[10px] text-slate-500 block">Detected Events</span>
+                <span className="text-[10px] text-slate-500 block">
+                  Detected Events
+                </span>
                 <span
                   className={
-                    selectedEntity.event_count > 0 ? "text-amber-400 font-bold" : "text-slate-400"
+                    selectedEntity.event_count > 0
+                      ? "text-amber-400 font-bold"
+                      : "text-slate-400"
                   }
                 >
                   {selectedEntity.event_count}
