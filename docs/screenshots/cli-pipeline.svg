@@ -1,0 +1,35 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 820 454" width="100%" height="auto">
+  <defs>
+    <linearGradient id="bg-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0b0f17" />
+      <stop offset="100%" stop-color="#030712" />
+    </linearGradient>
+  </defs>
+  <rect width="820" height="454" rx="10" fill="url(#bg-grad)" stroke="#1e293b" stroke-width="1.5" />
+  <!-- Terminal Header -->
+  <circle cx="24" cy="22" r="6" fill="#ef4444" />
+  <circle cx="44" cy="22" r="6" fill="#eab308" />
+  <circle cx="64" cy="22" r="6" fill="#22c55e" />
+  <text x="410.0" y="26" text-anchor="middle" fill="#64748b" font-family="ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,monospace" font-size="12" font-weight="500">vessel-behavior-cli — bash</text>
+  <line x1="0" y1="40" x2="820" y2="40" stroke="#1e293b" stroke-width="1" />
+  <!-- Terminal Output -->
+  <g font-family="ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,monospace" font-size="13">
+    <text x="24" y="71" fill="#38bdf8" font-weight="bold">$ python scripts/train_model.py TCN_AUTOENCODER</text>
+    <text x="24" y="93" fill="#94a3b8" font-weight="normal">Starting training run for TCN Trajectory Autoencoder v1 (TCN_AUTOENCODER)...</text>
+    <text x="24" y="115" fill="#94a3b8" font-weight="normal">Loaded 21 vessel tracks for training on dataset synthetic_demo_v1.</text>
+    <text x="24" y="137" fill="#64748b" font-weight="normal">  Epoch [1/12]   Train Loss: 19.29507 | Val Loss: 4.42409</text>
+    <text x="24" y="159" fill="#64748b" font-weight="normal">  Epoch [4/12]   Train Loss:  4.88752 | Val Loss: 0.90813</text>
+    <text x="24" y="181" fill="#64748b" font-weight="normal">  Epoch [8/12]   Train Loss:  1.81563 | Val Loss: 0.40136</text>
+    <text x="24" y="203" fill="#64748b" font-weight="normal">  Epoch [12/12]  Train Loss:  0.79606 | Val Loss: 0.29074</text>
+    <text x="24" y="225" fill="#34d399" font-weight="bold">Training completed! Anomaly Threshold (p95): 0.98604 | Val Loss: 0.29074</text>
+    <text x="24" y="247" fill="#34d399" font-weight="bold">Model model_tcn_autoencoder_v1 successfully persisted in model registry.</text>
+    <text x="24" y="269" fill="#ffffff" font-weight="normal"></text>
+    <text x="24" y="291" fill="#38bdf8" font-weight="bold">$ python scripts/run_evaluation.py</text>
+    <text x="24" y="313" fill="#94a3b8" font-weight="normal">Running benchmark evaluation for model_tcn_autoencoder_v1 on SYNTHETIC_BENCHMARK...</text>
+    <text x="24" y="335" fill="#f1f5f9" font-weight="bold">Benchmark Performance Metrics:</text>
+    <text x="24" y="357" fill="#fbbf24" font-weight="normal">  Precision: 1.0000   Recall: 1.0000   F1-Score: 1.0000</text>
+    <text x="24" y="379" fill="#fbbf24" font-weight="normal">  ROC-AUC:   1.0000   PR-AUC: 1.0000   P@5: 1.0000   P@10: 1.0000</text>
+    <text x="24" y="401" fill="#fbbf24" font-weight="normal">  False Alert Rate: 0.000 alerts per vessel-day</text>
+    <text x="24" y="423" fill="#34d399" font-weight="bold">Evaluation record eval_8224d118 persisted to database.</text>
+  </g>
+</svg>
