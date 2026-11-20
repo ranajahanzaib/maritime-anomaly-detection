@@ -5,11 +5,11 @@
   "seq_len": 16,
   "in_features": 7,
   "validation_metrics": {
-    "final_train_loss": 6.253735,
-    "final_val_loss": 16.883424,
-    "reconstruction_error_mean": 16.883424,
-    "reconstruction_error_p95": 128.309552,
-    "anomaly_threshold": 128.309552,
+    "final_train_loss": 9.970161,
+    "final_val_loss": 1.243282,
+    "reconstruction_error_mean": 1.243282,
+    "reconstruction_error_p95": 1.795793,
+    "anomaly_threshold": 1.795793,
     "total_windows": 153,
     "train_samples": 123,
     "val_samples": 30
@@ -17,64 +17,64 @@
   "training_history": [
     {
       "epoch": 1,
-      "train_loss": 12.788507,
-      "val_loss": 26.446745
+      "train_loss": 17.957548,
+      "val_loss": 4.585414
     },
     {
       "epoch": 2,
-      "train_loss": 10.510139,
-      "val_loss": 24.705036
+      "train_loss": 15.804412,
+      "val_loss": 3.90558
     },
     {
       "epoch": 3,
-      "train_loss": 9.798657,
-      "val_loss": 23.815512
+      "train_loss": 15.085513,
+      "val_loss": 3.505513
     },
     {
       "epoch": 4,
-      "train_loss": 9.330328,
-      "val_loss": 22.90261
+      "train_loss": 14.361419,
+      "val_loss": 3.086254
     },
     {
       "epoch": 5,
-      "train_loss": 8.834429,
-      "val_loss": 22.005687
+      "train_loss": 13.735775,
+      "val_loss": 2.74478
     },
     {
       "epoch": 6,
-      "train_loss": 8.338301,
-      "val_loss": 21.174767
+      "train_loss": 13.169019,
+      "val_loss": 2.399392
     },
     {
       "epoch": 7,
-      "train_loss": 7.94953,
-      "val_loss": 20.346919
+      "train_loss": 12.470571,
+      "val_loss": 2.154818
     },
     {
       "epoch": 8,
-      "train_loss": 7.510825,
-      "val_loss": 19.612824
+      "train_loss": 11.973748,
+      "val_loss": 1.915752
     },
     {
       "epoch": 9,
-      "train_loss": 7.173273,
-      "val_loss": 18.85788
+      "train_loss": 11.440311,
+      "val_loss": 1.705533
     },
     {
       "epoch": 10,
-      "train_loss": 6.866487,
-      "val_loss": 18.124753
+      "train_loss": 10.914383,
+      "val_loss": 1.522092
     },
     {
       "epoch": 11,
-      "train_loss": 6.550358,
-      "val_loss": 17.486929
+      "train_loss": 10.418808,
+      "val_loss": 1.371367
     },
     {
       "epoch": 12,
-      "train_loss": 6.253735,
-      "val_loss": 16.883424
+      "train_loss": 9.970161,
+      "val_loss": 1.243282
     }
   ],
-  "trained_at": "2026-11-17T09:31:21Z"
+  "trained_at": "2026-11-20T16:08:09Z"
 }

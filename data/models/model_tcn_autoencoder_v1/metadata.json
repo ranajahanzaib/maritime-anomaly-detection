@@ -5,11 +5,11 @@
   "seq_len": 16,
   "in_features": 7,
   "validation_metrics": {
-    "final_train_loss": 0.399093,
-    "final_val_loss": 0.15951,
-    "reconstruction_error_mean": 0.15951,
-    "reconstruction_error_p95": 0.355001,
-    "anomaly_threshold": 0.355001,
+    "final_train_loss": 0.796063,
+    "final_val_loss": 0.290744,
+    "reconstruction_error_mean": 0.290744,
+    "reconstruction_error_p95": 0.986035,
+    "anomaly_threshold": 0.986035,
     "total_windows": 153,
     "train_samples": 123,
     "val_samples": 30
@@ -17,64 +17,64 @@
   "training_history": [
     {
       "epoch": 1,
-      "train_loss": 19.124226,
-      "val_loss": 3.390742
+      "train_loss": 19.295071,
+      "val_loss": 4.424088
     },
     {
       "epoch": 2,
-      "train_loss": 9.737924,
-      "val_loss": 1.82614
+      "train_loss": 10.603836,
+      "val_loss": 3.434834
     },
     {
       "epoch": 3,
-      "train_loss": 5.256475,
-      "val_loss": 1.199941
+      "train_loss": 7.086927,
+      "val_loss": 2.053508
     },
     {
       "epoch": 4,
-      "train_loss": 3.500642,
-      "val_loss": 0.662074
+      "train_loss": 4.887523,
+      "val_loss": 0.908134
     },
     {
       "epoch": 5,
-      "train_loss": 2.155711,
-      "val_loss": 0.36586
+      "train_loss": 4.264127,
+      "val_loss": 0.722566
     },
     {
       "epoch": 6,
-      "train_loss": 1.572498,
-      "val_loss": 0.361027
+      "train_loss": 3.406281,
+      "val_loss": 0.465531
     },
     {
       "epoch": 7,
-      "train_loss": 1.044765,
-      "val_loss": 0.360271
+      "train_loss": 2.396282,
+      "val_loss": 0.43869
     },
     {
       "epoch": 8,
-      "train_loss": 0.876154,
-      "val_loss": 0.331284
+      "train_loss": 1.815631,
+      "val_loss": 0.401358
     },
     {
       "epoch": 9,
-      "train_loss": 0.709642,
-      "val_loss": 0.272261
+      "train_loss": 1.342844,
+      "val_loss": 0.355597
     },
     {
       "epoch": 10,
-      "train_loss": 0.57873,
-      "val_loss": 0.222668
+      "train_loss": 1.108791,
+      "val_loss": 0.349266
     },
     {
       "epoch": 11,
-      "train_loss": 0.481549,
-      "val_loss": 0.169683
+      "train_loss": 0.850716,
+      "val_loss": 0.312975
     },
     {
       "epoch": 12,
-      "train_loss": 0.399093,
-      "val_loss": 0.15951
+      "train_loss": 0.796063,
+      "val_loss": 0.290744
     }
   ],
-  "trained_at": "2026-11-17T09:31:13Z"
+  "trained_at": "2026-11-20T16:07:54Z"
 }
