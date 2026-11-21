@@ -14,7 +14,7 @@
     "clsx": "^2.1.1",
     "lucide-react": "^1.16.0",
     "maplibre-gl": "^6.4.1",
-    "next": "15.5.28",
+    "next": "15.5.29",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
     "recharts": "^2.15.1",
